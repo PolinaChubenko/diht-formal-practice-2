@@ -3,8 +3,6 @@
 #include <set>
 #include <utility>
 #include <vector>
-#include <map>
-
 
 class ContextFreeGrammar {
 protected:
@@ -13,41 +11,47 @@ protected:
         char term{};
         std::string terms;
         int dot_pos = 0;
-        int i = 0;
+        int word_pos = 0;
     private:
         void parse_rule(std::string rule) {
             auto found = rule.find("->");
-            if (found == std::string::npos)
-                throw std::invalid_argument("This is not a rule");
-            if (found == 1) {
-                term = rule[0];
-                terms = rule.substr(found + 2);
-            } else {
-                throw std::invalid_argument("This rule is invalid");
+            if (found != 1) {
+                throw std::invalid_argument("There is an invalid rule");
+            }
+            term = rule[0];
+            terms = rule.substr(found + 2);
+            if (terms == " ") {
+                terms = "";
             }
         }
     public:
         explicit Rule(const std::string& rule) {
             parse_rule(rule);
         }
-        Rule(char term, std::string terms, int dot_pos, int i) :
-                term(term), terms(std::move(terms)), dot_pos(dot_pos), i(i) {}
-        Rule(const std::string& rule, int dot_pos, int i) : dot_pos(dot_pos), i(i) {
+        Rule(char term, std::string terms, int dot_pos, int word_pos) :
+                term(term), terms(std::move(terms)), dot_pos(dot_pos), word_pos(word_pos) {}
+        Rule(const std::string& rule, int dot_pos, int word_pos) : dot_pos(dot_pos), word_pos(word_pos) {
             parse_rule(rule);
         }
         bool operator==(const Rule& rule) const {
-            return term == rule.term && terms == rule.terms && i == rule.i && dot_pos == rule.dot_pos;
+            return term == rule.term && terms == rule.terms && word_pos == rule.word_pos && dot_pos == rule.dot_pos;
         }
         friend std::ostream& operator << (std::ostream& out, const Rule& rule) {
-            out << '[' << rule.term << "->";
+            out << rule.term << "->";
             out << rule.terms.substr(0, rule.dot_pos) << "." << rule.terms.substr(rule.dot_pos);
-            out << ':' << rule.i << "]\n";
+            out << ':' << rule.word_pos;
             return out;
         }
     };
-    struct Comp {
+    struct Comparator {
         bool operator() (const Rule& rule1, const Rule& rule2) const {
             if (rule1.term == rule2.term) {
+                if (rule1.terms == rule2.terms) {
+                    if (rule1.dot_pos == rule2.dot_pos) {
+                        return rule1.word_pos < rule2.word_pos;
+                    }
+                    return rule1.dot_pos < rule2.dot_pos;
+                }
                 return rule1.terms < rule2.terms;
             }
             return rule1.term < rule2.term;
@@ -55,16 +59,22 @@ protected:
     };
 private:
     std::vector<Rule> rules;
-    std::vector<std::set<Rule, Comp>> situations; // aka D
+    std::vector<std::set<Rule, Comparator>> situations; // aka D
 private:
     friend std::ostream& operator << (std::ostream& out, const ContextFreeGrammar& grammar) {
-        int iter = 0;
+        int D_iter = 0;
         for (auto& set : grammar.situations) {
-            out << "iter:" << iter << "\n";
+            out << "D_" << D_iter << "\n" << "[";
+            int rules_iter = 0;
             for (auto& rule : set) {
                 out << rule;
+                ++rules_iter;
+                if (rules_iter != set.size()) {
+                    out << ", ";
+                }
             }
-            iter++;
+            out << "]\n";
+            ++D_iter;
         }
         return out;
     }
@@ -79,7 +89,7 @@ private:
             }
             if (rule.terms[rule.dot_pos] == word[j - 1]) {
                 // A -> Pa.Q, i
-                auto new_rule = Rule(rule.term, rule.terms, rule.dot_pos + 1, rule.i);
+                auto new_rule = Rule(rule.term, rule.terms, rule.dot_pos + 1, rule.word_pos);
                 situations[j].insert(new_rule);
             }
         }
@@ -91,13 +101,13 @@ private:
             if (rule1.dot_pos != rule1.terms.size()) {
                 continue;
             }
-            for (const auto& rule2 : situations[rule1.i]) {
+            for (const auto& rule2 : situations[rule1.word_pos]) {
                 // A -> q.Br, j
                 if (rule2.terms[rule2.dot_pos] != rule1.term) {
                     continue;
                 }
                 // A -> qB.r, j
-                auto new_rule = Rule(rule2.term, rule2.terms, rule2.dot_pos + 1, rule2.i);
+                auto new_rule = Rule(rule2.term, rule2.terms, rule2.dot_pos + 1, rule2.word_pos);
                 auto result = situations[j].insert(new_rule);
                 if (result.second) {
                     is_situations_changed = true;
@@ -110,11 +120,11 @@ private:
         bool is_situations_changed = false;
         for (const auto& rule1 : situations[j]) {
             // A -> p.Bq, i
+            if (rule1.dot_pos >= rule1.terms.size()) {
+                continue;
+            }
             for (const auto& rule2 : rules) {
                 // B -> r
-                if (rule1.dot_pos >= rule1.terms.size()) {
-                    continue;
-                }
                 if (rule1.terms[rule1.dot_pos] != rule2.term) {
                     continue;
                 }
@@ -135,25 +145,14 @@ public:
         }
     }
     bool EarlyCheck(const std::string& word) {
-//        for (auto& rule : rules) {
-//            std::cout << rule;
-//        }
-//        std::cout << "Early start\n\n";
-
         situations.resize(word.size() + 1);
         situations[0].insert(Rule("$->S"));
         for (int j = 0; j < word.size() + 1; ++j) {
-            //std::cout << "SCAN:\n";
             scan(j, word);
-            //std::cout << *this << std::endl;
             bool is_situations_changed = true;
             while(is_situations_changed) {
-                //std::cout << "COMPLETE\n";
                 bool is_change_in_complete = complete(j, word);
-                //std::cout << *this << std::endl;
-                //std::cout << "PREDICT\n";
                 bool is_change_in_predict = predict(j, word);
-                //std::cout << *this << std::endl;
                 is_situations_changed = is_change_in_complete || is_change_in_predict;
             }
         }
@@ -164,17 +163,19 @@ public:
 };
 
 int main() {
-//    int n;
-//    std::cin >> n;
-//    std::vector<std::string> rules(n);
-//    for (auto& rule : rules) {
-//        std::cin >> rule;
-//    }
-    std::vector<std::string> rules = {"S->aSbS", "S->c"};
-    std::string word = "acbc";
+    int n;
+    std::cin >> n;
+    std::vector<std::string> rules(n);
+    for (auto& rule : rules) {
+        std::cin >> rule;
+    }
+//    std::vector<std::string> rules = {"S->(S)S", "S->S(S)", "S-> "};
+//    std::string word = "(()(()))()";
+//    std::vector<std::string> rules = {"S->aSbS", "S-> "};
+//    std::string word = "abab";
     auto gr = ContextFreeGrammar(rules);
-//    std::string word;
-//    std::cin >> word;
+    std::string word;
+    std::cin >> word;
     std::cout << (gr.EarlyCheck(word) ? "Yes\n" : "No\n");
     return 0;
 }
