@@ -1,17 +1,23 @@
 #include <Early_algorithm.h>
 #include <iostream>
 
+
 int main() {
+    std::cout << "Enter the number of rules in your context-free Grammar: ";
     int n;
     std::cin >> n;
-    std::vector<std::string> rules(n);
-    for (auto& rule : rules) {
-        std::cin >> rule;
-    }
-    auto gr = ContextFreeGrammar(rules);
+    auto grammar = ContextFreeGrammar(n);
+    std::cout << "Rules:\n";
+    std::cin >> grammar;
+
+    std::cout << "Enter the number of words you want to check for belonging to grammar: ";
+    std::cin >> n;
     std::string word;
-    std::cin >> word;
-    std::cout << (gr.EarlyCheck(word) ? "Word is in grammar" : "Word is not in grammar") << "\n";
+    for (int i = 0; i < n; ++i) {
+        std::cout << "Word: ";
+        std::cin >> word;
+        std::cout << (grammar.EarlyParse(word) ? "In grammar" : "Not in grammar") << std::endl;
+    }
     return 0;
 }
 

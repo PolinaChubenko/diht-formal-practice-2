@@ -10,6 +10,7 @@ find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${mipt-formal-practice-2_SOURCE_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${mipt-formal-practice-2_SOURCE_DIR}/bin)
 set(Boost_USE_MULTITHREADED OFF)
 
 SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage --coverage")

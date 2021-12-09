@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <set>
-#include <utility>
 #include <vector>
 
 class ContextFreeGrammar {
@@ -14,15 +13,14 @@ protected:
         std::string terms;
         int dot_pos = 0;
         int word_pos = 0;
-    private:
+    public:
         void parse_rule(std::string);
     public:
+        Rule() = default;
         explicit Rule(const std::string&);
-        Rule(char term, std::string terms, int dot_pos, int word_pos) :
-                term(term), terms(std::move(terms)), dot_pos(dot_pos), word_pos(word_pos) {}
+        Rule(char, const std::string&, int, int);
         Rule(const std::string&, int, int);
         bool operator==(const Rule&) const;
-        friend std::ostream& operator << (std::ostream&, const Rule&);
     };
     struct Comparator {
         bool operator() (const Rule&, const Rule&) const;
@@ -30,13 +28,16 @@ protected:
 private:
     std::vector<Rule> rules;
     std::vector<std::set<Rule, Comparator>> situations; // aka D
-private:
+protected:
     void scan(int, const std::string&);
     bool complete(int, const std::string&);
     bool predict(int, const std::string&);
-    friend std::ostream &operator<<(std::ostream &, const Rule&);
+    friend std::istream& operator >> (std::istream&, Rule&);
+    friend std::ostream& operator << (std::ostream&, const Rule&);
 public:
+    explicit ContextFreeGrammar(int);
     explicit ContextFreeGrammar(const std::vector<std::string>&);
+    friend std::istream& operator >> (std::istream&, ContextFreeGrammar&);
     friend std::ostream& operator << (std::ostream&, const ContextFreeGrammar&);
-    bool EarlyCheck(const std::string&);
+    bool EarlyParse(const std::string&);
 };

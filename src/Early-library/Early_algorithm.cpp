@@ -18,12 +18,24 @@ ContextFreeGrammar::Rule::Rule(const std::string &rule) {
     parse_rule(rule);
 }
 
+ContextFreeGrammar::Rule::Rule(char term, const std::string &terms, int dot_pos, int word_pos) :
+        term(term), terms(terms), dot_pos(dot_pos), word_pos(word_pos) {}
+
 ContextFreeGrammar::Rule::Rule(const std::string &rule, int dot_pos, int word_pos) : dot_pos(dot_pos), word_pos(word_pos) {
     parse_rule(rule);
 }
 
 bool ContextFreeGrammar::Rule::operator==(const ContextFreeGrammar::Rule &rule) const {
     return term == rule.term && terms == rule.terms && word_pos == rule.word_pos && dot_pos == rule.dot_pos;
+}
+
+std::istream &operator>>(std::istream &in, ContextFreeGrammar::Rule &rule) {
+    std::string str_rule;
+    in >> str_rule;
+    rule.parse_rule(str_rule);
+    rule.dot_pos = 0;
+    rule.word_pos = 0;
+    return in;
 }
 
 std::ostream &operator<<(std::ostream &out, const ContextFreeGrammar::Rule &rule) {
@@ -114,10 +126,24 @@ bool ContextFreeGrammar::predict(int j, const std::string &word) {
     return is_situations_changed;
 }
 
+ContextFreeGrammar::ContextFreeGrammar(int rules_amount) {
+    rules.resize(rules_amount);
+}
+
 ContextFreeGrammar::ContextFreeGrammar(const std::vector<std::string> &list_of_rules) {
     for (const auto& rule : list_of_rules) {
         rules.emplace_back(Rule(rule));
     }
+}
+
+std::istream &operator>>(std::istream &in, ContextFreeGrammar &grammar) {
+    if (grammar.rules.empty()) {
+        throw std::invalid_argument("Grammar has no rules");
+    }
+    for (auto & rule : grammar.rules) {
+        in >> rule;
+    }
+    return in;
 }
 
 std::ostream &operator<<(std::ostream &out, const ContextFreeGrammar &grammar) {
@@ -138,7 +164,8 @@ std::ostream &operator<<(std::ostream &out, const ContextFreeGrammar &grammar) {
     return out;
 }
 
-bool ContextFreeGrammar::EarlyCheck(const std::string &word) {
+bool ContextFreeGrammar::EarlyParse(const std::string &word) {
+    situations.clear();
     situations.resize(word.size() + 1);
     situations[0].insert(Rule("$->S"));
     for (int j = 0; j < word.size() + 1; ++j) {
