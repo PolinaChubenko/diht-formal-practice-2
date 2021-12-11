@@ -1,12 +1,12 @@
-set(TARGET_NAME "Early-library")
+set(TARGET_NAME "Earley")
 set(COVERAGE_NAME "coverage")
-set(COVERAGE_TARGET "coverage-Early-library")
-set(SOURCE_DIR_MAIN "${Early-library_SOURCE_DIR}")
+set(COVERAGE_TARGET "coverage-Earley")
+set(SOURCE_DIR_MAIN "${Earley_SOURCE_DIR}")
 set(SOURCES ${source-files})
 
 message(INFO ${SOURCES})
 
-set(TEST_SOURCES EarlyTestCase.h EarlyTestCase.cpp)
+set(TEST_SOURCES EarleyTestCase.h EarleyTestCase.cpp)
 run_coverage(
         "${TEST_SOURCES}"
         "${SOURCES}"

@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-class EarlyTestCase: public ::testing::Test {
+class EarleyTestCase: public ::testing::Test {
 public:
 
 };

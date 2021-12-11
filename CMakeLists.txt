@@ -66,7 +66,7 @@ endfunction()
 
 include_directories(include)
 
-add_subdirectory(src/Early-library)
+add_subdirectory(src)
 add_subdirectory(examples)
 
 add_subdirectory(tests)
