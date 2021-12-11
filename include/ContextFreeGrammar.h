@@ -44,6 +44,6 @@ public:
     friend std::ostream &operator<<(std::ostream&, const ContextFreeGrammar&);
     [[nodiscard]] std::vector<Rule> get_rules() const;
     bool is_definitely_not_in_grammar(const std::string&);
-    std::set<char> get_alphabet();
+    [[nodiscard]] std::set<char> get_alphabet();
 };
 

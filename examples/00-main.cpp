@@ -10,7 +10,7 @@ int main() {
     std::cout << "Rules:\n";
     std::cin >> grammar;
     std::cout << "This is the rules of your grammar:\n";
-    std::cout << grammar;
+    std::cout << grammar << std::endl;
     std::cout << "This is the alphabet of your grammar:\n";
     auto alphabet = grammar.get_alphabet();
     for (auto terminal : alphabet) {

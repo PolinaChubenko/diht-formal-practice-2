@@ -123,7 +123,7 @@ std::ostream &operator<<(std::ostream &out, const ContextFreeGrammar &grammar) {
             out << ", ";
         }
     }
-    out << "]\n";
+    out << "]";
     return out;
 }
 

@@ -29,8 +29,6 @@ protected:
     void scan(size_t, const std::string&);
     bool complete(size_t);
     bool predict(size_t);
-    friend std::istream& operator >> (std::istream&, Rule&);
-    friend std::ostream& operator << (std::ostream&, const Rule&);
 public:
     explicit Earley(size_t);
     explicit Earley(ContextFreeGrammar);
