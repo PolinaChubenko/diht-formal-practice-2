@@ -18,7 +18,7 @@ int main() {
     for (int i = 0; i < n; ++i) {
         std::cout << "Word: ";
         std::cin >> word;
-        std::cout << (earley.Parse(word) ? "In grammar" : "Not in grammar") << std::endl;
+        std::cout << (earley.parse(word) ? "In grammar" : "Not in grammar") << std::endl;
     }
     return 0;
 }

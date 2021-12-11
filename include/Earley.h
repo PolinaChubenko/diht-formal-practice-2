@@ -37,6 +37,6 @@ public:
     explicit Earley(const std::vector<std::string> &vec_of_rules);
     friend std::istream& operator >> (std::istream&, Earley&);
     friend std::ostream& operator << (std::ostream&, const Earley&);
-    bool Parse(const std::string&);
+    bool parse(const std::string&);
 };
 

@@ -73,7 +73,8 @@ bool Earley::predict(size_t j) {
         if (!situation.rule.is_dot_valid()) {
             continue;
         }
-        for (const auto& rule : grammar.get_rules()) {
+        auto rules = grammar.get_rules();
+        for (const auto& rule : rules) {
             // B -> r
             if (situation.rule.get_dot_term() != rule.get_term()) {
                 continue;
@@ -118,7 +119,10 @@ std::ostream &operator<<(std::ostream &out, const Earley &earley) {
     return out;
 }
 
-bool Earley::Parse(const std::string &word) {
+bool Earley::parse(const std::string &word) {
+    if (grammar.is_definitely_not_in_grammar(word)) {
+        return false;
+    }
     situations.clear();
     situations.resize(word.size() + 1);
     situations[0].insert(Situation("$->S"));

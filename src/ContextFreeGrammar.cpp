@@ -77,6 +77,20 @@ bool Rule::is_dot_valid() const {
 
 
 //////////////////////      ContextFreeGrammar      //////////////////////
+void ContextFreeGrammar::parse_alphabet() {
+    for (const auto& rule : rules) {
+        auto terms = rule.get_terms();
+        for (const auto& symbol : terms) {
+            if (symbol == '$' || symbol == '#' || rule.get_term() == '$' || rule.get_term() == '#') {
+                throw std::invalid_argument("Grammar has rules with forbidden symbols");
+            }
+            if (!std::isupper(symbol)) {
+                alphabet.emplace(symbol);
+            }
+        }
+    }
+}
+
 ContextFreeGrammar::ContextFreeGrammar(size_t rules_amount) {
     rules.resize(rules_amount);
 }
@@ -85,6 +99,7 @@ ContextFreeGrammar::ContextFreeGrammar(const std::vector<std::string> &vec_of_ru
     for (const auto& rule : vec_of_rules) {
         rules.emplace_back(Rule(rule));
     }
+    parse_alphabet();
 }
 
 std::istream &operator>>(std::istream &in, ContextFreeGrammar &grammar) {
@@ -94,6 +109,7 @@ std::istream &operator>>(std::istream &in, ContextFreeGrammar &grammar) {
     for (auto & rule : grammar.rules) {
         in >> rule;
     }
+    grammar.parse_alphabet();
     return in;
 }
 
@@ -113,4 +129,17 @@ std::ostream &operator<<(std::ostream &out, const ContextFreeGrammar &grammar) {
 
 std::vector<Rule> ContextFreeGrammar::get_rules() const {
     return rules;
+}
+
+bool ContextFreeGrammar::is_definitely_not_in_grammar(const std::string &word) {
+    for (const auto& letter : word) {
+        if (alphabet.find(letter) == alphabet.end()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::set<char> ContextFreeGrammar::get_alphabet() {
+    return alphabet;
 }

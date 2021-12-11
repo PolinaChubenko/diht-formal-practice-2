@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <set>
 #include <vector>
 
 
@@ -32,12 +33,17 @@ public:
 
 class ContextFreeGrammar {
 private:
+    std::set<char> alphabet;
     std::vector<Rule> rules;
+protected:
+    void parse_alphabet();
 public:
     explicit ContextFreeGrammar(size_t);
     explicit ContextFreeGrammar(const std::vector<std::string>&);
-    friend std::istream &operator>>(std::istream &, ContextFreeGrammar&);
-    friend std::ostream &operator<<(std::ostream &, const ContextFreeGrammar&);
+    friend std::istream &operator>>(std::istream&, ContextFreeGrammar&);
+    friend std::ostream &operator<<(std::ostream&, const ContextFreeGrammar&);
     [[nodiscard]] std::vector<Rule> get_rules() const;
+    bool is_definitely_not_in_grammar(const std::string&);
+    std::set<char> get_alphabet();
 };
 

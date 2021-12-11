@@ -11,6 +11,12 @@ int main() {
     std::cin >> grammar;
     std::cout << "This is the rules of your grammar:\n";
     std::cout << grammar;
+    std::cout << "This is the alphabet of your grammar:\n";
+    auto alphabet = grammar.get_alphabet();
+    for (auto terminal : alphabet) {
+        std::cout << terminal << " ";
+    }
+    std::cout << std::endl;
     return 0;
 }
 
