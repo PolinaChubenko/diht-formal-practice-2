@@ -1,0 +1,2 @@
+add_subdirectory(ContextFreeGrammar)
+add_subdirectory(Earley)
