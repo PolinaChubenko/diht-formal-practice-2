@@ -1,8 +1,6 @@
 #include "Earley.h"
 
 
-Earley::Situation::Situation(Rule rule, size_t word_pos) : rule(std::move(rule)), word_pos(word_pos) {}
-
 Earley::Situation::Situation(char term, std::string terms, size_t dot_pos, size_t word_pos)
         : rule(Rule(term, std::move(terms), dot_pos)), word_pos(word_pos) {}
 
@@ -96,6 +94,10 @@ Earley::Earley(ContextFreeGrammar grammar) : grammar(std::move(grammar)) {}
 
 Earley::Earley(const std::vector<std::string> &vec_of_rules) : grammar(ContextFreeGrammar(vec_of_rules)) {}
 
+void Earley::set_grammar(const ContextFreeGrammar& new_grammar) {
+    grammar = new_grammar;
+}
+
 std::istream &operator>>(std::istream &in, Earley &earley) {
     in >> earley.grammar;
     return in;
@@ -104,7 +106,7 @@ std::istream &operator>>(std::istream &in, Earley &earley) {
 std::ostream &operator<<(std::ostream &out, const Earley &earley) {
     size_t D_iter = 0;
     for (auto& set : earley.situations) {
-        out << "D_" << D_iter << "\n" << "[";
+        out << "D_" << D_iter << ": [";
         size_t rules_iter = 0;
         for (auto& situation : set) {
             out << situation.rule << ":" << situation.word_pos;
