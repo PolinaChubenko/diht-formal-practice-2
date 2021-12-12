@@ -6,7 +6,7 @@ set(SOURCES ${source-files})
 
 message(INFO ${SOURCES})
 
-set(TEST_SOURCES EarleyTestCase.h EarleyTestCase.cpp)
+set(TEST_SOURCES EarleyTestCase.h EarleyTestCase.cpp EarleyMock.h EarleyMock.cpp)
 run_coverage(
         "${TEST_SOURCES}"
         "${SOURCES}"

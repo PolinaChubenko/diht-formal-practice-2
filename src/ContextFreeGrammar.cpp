@@ -92,7 +92,7 @@ void ContextFreeGrammar::parse_alphabet() {
 }
 
 ContextFreeGrammar::ContextFreeGrammar(size_t rules_amount) {
-    rules.resize(rules_amount);
+    set_rules_amount(rules_amount);
 }
 
 ContextFreeGrammar::ContextFreeGrammar(const std::vector<std::string> &vec_of_rules) {
@@ -100,6 +100,10 @@ ContextFreeGrammar::ContextFreeGrammar(const std::vector<std::string> &vec_of_ru
         rules.emplace_back(Rule(rule));
     }
     parse_alphabet();
+}
+
+void ContextFreeGrammar::set_rules_amount(size_t rules_amount) {
+    rules.resize(rules_amount);
 }
 
 std::istream &operator>>(std::istream &in, ContextFreeGrammar &grammar) {

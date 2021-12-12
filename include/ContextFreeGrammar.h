@@ -33,13 +33,15 @@ public:
 
 class ContextFreeGrammar {
 private:
-    std::set<char> alphabet;
-    std::vector<Rule> rules;
+    std::set<char> alphabet{};
+    std::vector<Rule> rules{};
 protected:
     void parse_alphabet();
 public:
+    ContextFreeGrammar() = default;
     explicit ContextFreeGrammar(size_t);
     explicit ContextFreeGrammar(const std::vector<std::string>&);
+    void set_rules_amount(size_t);
     friend std::istream &operator>>(std::istream&, ContextFreeGrammar&);
     friend std::ostream &operator<<(std::ostream&, const ContextFreeGrammar&);
     [[nodiscard]] std::vector<Rule> get_rules() const;
