@@ -18,10 +18,10 @@
 #### Примеры взаимодействия:
 
 Запуск ```./ContextFreeGrammar-bin```
-![example1](imgs/ex1.png)
+![example1](imgs/example0.png)
 
 Запуск ```./Earley-bin```
-![example1](imgs/ex2.png)
+![example1](imgs/example1.png)
 
 #### Для сборки проекта:
 
