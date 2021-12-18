@@ -32,7 +32,7 @@ public:
     Earley() = default;
     explicit Earley(size_t);
     explicit Earley(ContextFreeGrammar);
-    explicit Earley(const std::vector<std::string> &vec_of_rules);
+    explicit Earley(const std::vector<std::string>&);
     void set_grammar(const ContextFreeGrammar&);
     friend std::istream& operator >> (std::istream&, Earley&);
     friend std::ostream& operator << (std::ostream&, const Earley&);

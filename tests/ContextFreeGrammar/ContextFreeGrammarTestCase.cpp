@@ -71,9 +71,11 @@ TEST_F(ContextFreeGrammarTestCase, GrammarBasic) {
     std::vector<std::string> rules = {"S->(S)S", "S->S(S)", "S-> "};
     std::vector<Rule> vec_rules = {Rule("S->(S)S"), Rule("S->S(S)"), Rule("S-> ")};
     std::set<char> alphabet = {'(', ')'};
+    std::set<char> non_terminals = {'S'};
     auto grammar = ContextFreeGrammar(rules);
     EXPECT_EQ(grammar.get_rules(), vec_rules);
     EXPECT_EQ(grammar.get_alphabet(), alphabet);
+    EXPECT_EQ(grammar.get_non_terminals(), non_terminals);
 }
 
 TEST_F(ContextFreeGrammarTestCase, AlphabetExceptions) {
@@ -87,6 +89,9 @@ TEST_F(ContextFreeGrammarTestCase, AlphabetExceptions) {
     EXPECT_THROW(auto rule = ContextFreeGrammar(rules), std::invalid_argument);
 
     rules = {"#->aSbS", "S->c"};
+    EXPECT_THROW(auto rule = ContextFreeGrammar(rules), std::invalid_argument);
+
+    rules = {"S->aSbS", "c->c"};
     EXPECT_THROW(auto rule = ContextFreeGrammar(rules), std::invalid_argument);
 
     rules = {"S->aSbS", "S-> ", "S->c"};

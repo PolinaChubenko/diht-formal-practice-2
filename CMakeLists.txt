@@ -8,7 +8,7 @@ set(EXTERNAL_INSTALL_LOCATION ${mipt-formal-practice-2_SOURCE_DIR}/3rdparty)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Threads REQUIRED)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${mipt-formal-practice-2_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${mipt-formal-practice-2_SOURCE_DIR}/bin)
 set(Boost_USE_MULTITHREADED OFF)

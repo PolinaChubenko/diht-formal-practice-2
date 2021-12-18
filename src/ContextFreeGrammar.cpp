@@ -79,13 +79,21 @@ bool Rule::is_dot_valid() const {
 //////////////////////      ContextFreeGrammar      //////////////////////
 void ContextFreeGrammar::parse_alphabet() {
     for (const auto& rule : rules) {
+        if (rule.get_term() == '$' || rule.get_term() == '#') {
+            throw std::invalid_argument("Grammar has rules with forbidden symbols");
+        }
+        if (!std::isupper(rule.get_term())) {
+            throw std::invalid_argument("Grammar has incorrect rule starting with terminal");
+        }
         auto terms = rule.get_terms();
         for (const auto& symbol : terms) {
-            if (symbol == '$' || symbol == '#' || rule.get_term() == '$' || rule.get_term() == '#') {
+            if (symbol == '$' || symbol == '#') {
                 throw std::invalid_argument("Grammar has rules with forbidden symbols");
             }
             if (!std::isupper(symbol)) {
                 alphabet.emplace(symbol);
+            } else {
+                non_terminals.emplace(symbol);
             }
         }
     }
@@ -146,4 +154,8 @@ bool ContextFreeGrammar::is_definitely_not_in_grammar(const std::string &word) {
 
 std::set<char> ContextFreeGrammar::get_alphabet() {
     return alphabet;
+}
+
+std::set<char> ContextFreeGrammar::get_non_terminals() {
+    return non_terminals;
 }
