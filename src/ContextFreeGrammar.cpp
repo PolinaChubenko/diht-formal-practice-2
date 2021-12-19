@@ -91,7 +91,7 @@ void ContextFreeGrammar::parse_alphabet() {
                 throw std::invalid_argument("Grammar has rules with forbidden symbols");
             }
             if (!std::isupper(symbol)) {
-                alphabet.emplace(symbol);
+                terminals.emplace(symbol);
             } else {
                 non_terminals.emplace(symbol);
             }
@@ -145,15 +145,15 @@ std::vector<Rule> ContextFreeGrammar::get_rules() const {
 
 bool ContextFreeGrammar::is_definitely_not_in_grammar(const std::string &word) {
     for (const auto& letter : word) {
-        if (alphabet.find(letter) == alphabet.end()) {
+        if (terminals.find(letter) == terminals.end()) {
             return true;
         }
     }
     return false;
 }
 
-std::set<char> ContextFreeGrammar::get_alphabet() {
-    return alphabet;
+std::set<char> ContextFreeGrammar::get_terminals() {
+    return terminals;
 }
 
 std::set<char> ContextFreeGrammar::get_non_terminals() {

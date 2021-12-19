@@ -9,7 +9,6 @@ LR::Situation::Situation(const std::string &rule, size_t dot_pos, char predict)
 
 LR::Situation::Situation(const std::string& rule, char predict) : rule(rule), predict(predict) {}
 
-
 bool operator<(const LR::Situation &situation1, const LR::Situation &situation2) {
     if (situation1.rule == situation2.rule) {
         return situation1.predict < situation2.predict;
@@ -23,6 +22,36 @@ bool operator==(const LR::Situation &situation1, const LR::Situation &situation2
 
 bool operator==(const LR::SetOfSituations &set1, const LR::SetOfSituations &set2) {
     return set1.situations == set2.situations;
+}
+
+std::ostream &operator<<(std::ostream &out, const LR::SetOfSituations &set) {
+    out << "[";
+    size_t rules_iter = 0;
+    for (auto& situation : set.situations) {
+        out << situation.rule << ":" << situation.predict;
+        ++rules_iter;
+        if (rules_iter != set.situations.size()) {
+            out << ", ";
+        }
+    }
+    out << "]\nFROM: ";
+    for (auto& prev : set.prev) {
+        out << prev.first << "-{";
+        size_t ver_iter = 0;
+        for (auto ver : prev.second) {
+            out << ver;
+            ++ver_iter;
+            if (ver_iter != prev.second.size()) {
+                out << " ";
+            }
+        }
+        out << "} ";
+    }
+    out << "\nTO: ";
+    for (auto& next : set.next) {
+        out << next.first << "-" << next.second << " ";
+    }
+    return out;
 }
 
 
@@ -87,7 +116,7 @@ void LR::build_automaton() {
                     automaton[same].prev[letter].emplace(vertex);
                 }
             }
-            automaton.pop_back();
+            automaton.erase(automaton.begin() + set_number);
             continue;
         }
         go_to(set_number);
@@ -96,18 +125,13 @@ void LR::build_automaton() {
 }
 
 size_t LR::find_equal_set(size_t index) {
-    for (size_t i = 0; i < automaton.size(); ++i) {
-        if (i == index) {
-            continue;
-        }
+    for (size_t i = 0; i < index; ++i) {
         if (automaton[index] == automaton[i]) {
             return i;
         }
     }
     return -1;
 }
-
-
 
 
 LR::LR(size_t n) : grammar(ContextFreeGrammar(n)) {}
@@ -120,6 +144,19 @@ void LR::set_grammar(const ContextFreeGrammar& new_grammar) {
     grammar = new_grammar;
 }
 
+void LR::get_automaton(std::ostream &out) const {
+    size_t V_iter = 0;
+    for (auto& set : automaton) {
+        out << "V_" << V_iter << ":";
+        out << set << "\n";
+        ++V_iter;
+    }
+}
+
+void LR::get_table(std::ostream &) const {
+
+}
+
 std::istream &operator>>(std::istream &in, LR &lr) {
     in >> lr.grammar;
     lr.build_automaton();
@@ -127,31 +164,7 @@ std::istream &operator>>(std::istream &in, LR &lr) {
 }
 
 std::ostream &operator<<(std::ostream &out, const LR &lr) {
-    size_t D_iter = 0;
-    for (auto& set : lr.automaton) {
-        out << "D_" << D_iter << ": [";
-        size_t rules_iter = 0;
-        for (auto& situation : set.situations) {
-            out << situation.rule << ":" << situation.predict;
-            ++rules_iter;
-            if (rules_iter != set.situations.size()) {
-                out << ", ";
-            }
-        }
-        out << "]\nFROM: ";
-        for (auto& prev : set.prev) {
-            out << prev.first << "-";
-            for (auto ver : prev.second) {
-                out << ver << " ";
-            }
-        }
-        out << "\nTO: ";
-        for (auto& next : set.next) {
-            out << next.first << "-" << next.second << " ";
-        }
-        out << "\n";
-        ++D_iter;
-    }
+    lr.get_automaton(out);
     return out;
 }
 

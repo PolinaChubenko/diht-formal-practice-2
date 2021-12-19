@@ -8,6 +8,7 @@
 #include <map>
 
 
+
 class LR {
 protected:
     struct Situation {
@@ -33,6 +34,7 @@ protected:
     friend bool operator<(const LR::Situation &, const LR::Situation &);
     friend bool operator==(const LR::Situation &, const LR::Situation &);
     friend bool operator==(const SetOfSituations &, const SetOfSituations &);
+    friend std::ostream& operator << (std::ostream&, const SetOfSituations&);
     void closure(size_t);
     void go_to(size_t);
     void build_automaton();
@@ -43,6 +45,8 @@ public:
     explicit LR(ContextFreeGrammar);
     explicit LR(const std::vector<std::string>&);
     void set_grammar(const ContextFreeGrammar&);
+    void get_automaton(std::ostream&) const;
+    void get_table(std::ostream&) const;
     friend std::istream& operator >> (std::istream&, LR&);
     friend std::ostream& operator << (std::ostream&, const LR&);
     bool parse(const std::string&);

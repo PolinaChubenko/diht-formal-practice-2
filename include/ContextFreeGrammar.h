@@ -33,7 +33,7 @@ public:
 
 class ContextFreeGrammar {
 private:
-    std::set<char> alphabet{};
+    std::set<char> terminals{};
     std::set<char> non_terminals{};
     std::vector<Rule> rules{};
 protected:
@@ -47,7 +47,7 @@ public:
     friend std::ostream &operator<<(std::ostream&, const ContextFreeGrammar&);
     [[nodiscard]] std::vector<Rule> get_rules() const;
     bool is_definitely_not_in_grammar(const std::string&);
-    [[nodiscard]] std::set<char> get_alphabet();
+    [[nodiscard]] std::set<char> get_terminals();
     [[nodiscard]] std::set<char> get_non_terminals();
 };
 

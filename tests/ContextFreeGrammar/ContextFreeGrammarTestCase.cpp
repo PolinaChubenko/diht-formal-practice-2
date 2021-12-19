@@ -74,7 +74,7 @@ TEST_F(ContextFreeGrammarTestCase, GrammarBasic) {
     std::set<char> non_terminals = {'S'};
     auto grammar = ContextFreeGrammar(rules);
     EXPECT_EQ(grammar.get_rules(), vec_rules);
-    EXPECT_EQ(grammar.get_alphabet(), alphabet);
+    EXPECT_EQ(grammar.get_terminals(), alphabet);
     EXPECT_EQ(grammar.get_non_terminals(), non_terminals);
 }
 
@@ -107,7 +107,7 @@ TEST_F(ContextFreeGrammarTestCase, GettingGrammarFromStream) {
     auto grammar = ContextFreeGrammar(2);
     input >> grammar;
     EXPECT_EQ(grammar.get_rules(), rules);
-    EXPECT_EQ(grammar.get_alphabet(), alphabet);
+    EXPECT_EQ(grammar.get_terminals(), alphabet);
 
     std::stringstream output;
     output << grammar;
