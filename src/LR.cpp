@@ -14,6 +14,12 @@ LR::Situation::Situation(const std::string& rule, char symbol) : rule(rule) {
 
 LR::SetOfSituations::SetOfSituations(int state_number) : state_number(state_number) {}
 
+LR::Action::Action(char method) : method(method) {}
+
+LR::Action::Action(char method, int state) : method(method), state(state) {}
+
+LR::Action::Action(char method, Rule rule) : method(method), rule(std::move(rule)) {}
+
 bool operator<(const LR::Situation &situation1, const LR::Situation &situation2) {
     if (situation1.rule == situation2.rule) {
         return situation1.predict < situation2.predict;
@@ -158,10 +164,49 @@ size_t LR::find_equal_set(size_t index) {
     return -1;
 }
 
+void LR::init_table() {
+    size_t automaton_size = alignment.size();
+    table['#'].resize(automaton_size);
+    for (auto& symbol : grammar.get_terminals()) {
+        table[symbol].resize(automaton_size);
+    }
+    for (auto& symbol : grammar.get_non_terminals()) {
+        table[symbol].resize(automaton_size);
+    }
+}
+
+void LR::build_table() {
+    for (int i = 0; i < automaton.size(); ++i) {
+        auto vertex = automaton[i];
+        if (vertex.state_number == -1) {
+            continue;
+        }
+        int j = alignment[i];
+        for (auto& to : vertex.next) {
+            table[to.first][j] = Action('s', alignment[to.second]);
+        }
+        for (auto& situation : vertex.situations) {
+            if (!situation.rule.is_dot_valid()) {
+                if (situation.rule.get_term() == '$') {
+                    for (auto& letter : situation.predict) {
+                        table[letter][j] = Action('a');
+                    }
+                } else {
+                    for (auto& letter : situation.predict) {
+                        table[letter][j] = Action('r', situation.rule);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void LR::preprocessing() {
     init_first();
     build_automaton();
+    init_table();
+    build_table();
 }
 
 LR::LR(size_t n) : grammar(ContextFreeGrammar(n)) {}
@@ -205,8 +250,40 @@ void LR::get_automaton(std::ostream &out) const {
     }
 }
 
-void LR::get_table(std::ostream &) const {
-
+void LR::get_table(std::ostream &out) const {
+    int cell_width = 10;
+    bool is_start = true;
+    for (auto& cell : table) {
+        auto letter = cell.first;
+        auto states = cell.second;
+        if (is_start) {
+            out << std::setw(cell_width) << "states";
+            for (int i = 0; i < states.size(); ++i) {
+                out << std::setw(cell_width) << i;
+            }
+            out << std::endl;
+            is_start = false;
+        }
+        out << std::setw(cell_width) << letter;
+        for (auto& state : states) {
+            std::string str_out;
+            if (state.method == 'n') {
+                str_out = " ";
+            } else if (state.method == 's') {
+                str_out = std::string(1, state.method);
+                str_out.append(":");
+                str_out.append(std::to_string(state.state));
+            } else if (state.method == 'r') {
+                str_out = std::string(1, state.method);
+                str_out.append(":");
+                str_out.append(state.rule.str());
+            } else {
+                str_out = std::string(1, state.method);
+            }
+            out << std::setw(cell_width) << str_out;
+        }
+        out << "\n";
+    }
 }
 
 std::istream &operator>>(std::istream &in, LR &lr) {
@@ -216,7 +293,7 @@ std::istream &operator>>(std::istream &in, LR &lr) {
 }
 
 std::ostream &operator<<(std::ostream &out, const LR &lr) {
-    lr.get_automaton(out);
+    lr.get_table(out);
     return out;
 }
 

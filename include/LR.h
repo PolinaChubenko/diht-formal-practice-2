@@ -6,6 +6,8 @@
 #include <set>
 #include <vector>
 #include <map>
+#include <iomanip>
+#include <stack>
 
 
 
@@ -29,11 +31,22 @@ protected:
         SetOfSituations() = default;
         explicit SetOfSituations(int);
     };
+    struct Action {
+        char method = 'n';
+        int state = -1;
+        Rule rule{};
+    public:
+        Action() = default;
+        explicit Action(char);
+        Action(char, int);
+        Action(char, Rule);
+    };
 protected:
     ContextFreeGrammar grammar;
     std::map<char, std::set<char>> first;
     std::vector<SetOfSituations> automaton;
     std::map<int, int> alignment;
+    std::map<char, std::vector<Action>> table;
 protected:
     friend bool operator<(const LR::Situation &, const LR::Situation &);
     friend bool operator==(const LR::Situation &, const LR::Situation &);
@@ -45,6 +58,8 @@ protected:
     void go_to(size_t);
     void build_automaton();
     size_t find_equal_set(size_t);
+    void init_table();
+    void build_table();
 public:
     void preprocessing();
     LR() = default;

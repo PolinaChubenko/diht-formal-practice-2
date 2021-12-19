@@ -73,7 +73,12 @@ bool Rule::is_dot_valid() const {
     return !(terms.empty() || dot_pos >= terms.size());
 }
 
-
+std::string Rule::str() const {
+    std::string rule = " ->";
+    rule[0] = term;
+    rule.append(terms);
+    return rule;
+}
 
 
 //////////////////////      ContextFreeGrammar      //////////////////////
@@ -85,6 +90,7 @@ void ContextFreeGrammar::parse_alphabet() {
         if (!std::isupper(rule.get_term())) {
             throw std::invalid_argument("Grammar has incorrect rule starting with terminal");
         }
+        non_terminals.emplace(rule.get_term());
         auto terms = rule.get_terms();
         for (const auto& symbol : terms) {
             if (symbol == '$' || symbol == '#') {

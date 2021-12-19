@@ -27,6 +27,7 @@ public:
     [[nodiscard]] size_t get_dot_pos() const;
     [[nodiscard]] char get_dot_term() const;
     [[nodiscard]] bool is_dot_valid() const;
+    [[nodiscard]] std::string str() const;
 };
 
 
