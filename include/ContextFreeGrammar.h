@@ -50,5 +50,6 @@ public:
     bool is_definitely_not_in_grammar(const std::string&);
     [[nodiscard]] std::set<char> get_terminals();
     [[nodiscard]] std::set<char> get_non_terminals();
+    bool is_epsilon_generative() const;
 };
 

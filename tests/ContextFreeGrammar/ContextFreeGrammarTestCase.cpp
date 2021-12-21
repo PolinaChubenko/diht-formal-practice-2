@@ -79,6 +79,18 @@ TEST_F(ContextFreeGrammarTestCase, GrammarBasic) {
     EXPECT_EQ(grammar.get_non_terminals(), non_terminals);
 }
 
+TEST_F(ContextFreeGrammarTestCase, GrammarEpsilonGenerative) {
+    std::vector<std::string> rules = {"S->(S)S", "S->S(S)", "S-> "};
+    auto grammar = ContextFreeGrammar(rules);
+    EXPECT_TRUE(grammar.is_epsilon_generative());
+}
+
+TEST_F(ContextFreeGrammarTestCase, GrammarNonEpsilonGenerative) {
+    std::vector<std::string> rules = {"S->aSbS", "S->cC", "C->d"};
+    auto grammar = ContextFreeGrammar(rules);
+    EXPECT_FALSE(grammar.is_epsilon_generative());
+}
+
 TEST_F(ContextFreeGrammarTestCase, AlphabetExceptions) {
     std::vector<std::string> rules = {"$->aSbS", "S->c"};
     EXPECT_THROW(auto rule = ContextFreeGrammar(rules), std::invalid_argument);

@@ -67,6 +67,9 @@ void LR::build_table() {
 
 
 void LR::preprocessing() {
+    if (grammar.is_epsilon_generative()) {
+        throw std::invalid_argument("Grammar contains epsilon generative non-terminals");
+    }
     automaton.set_grammar(grammar);
     init_table();
     build_table();

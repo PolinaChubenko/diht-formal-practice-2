@@ -165,3 +165,12 @@ std::set<char> ContextFreeGrammar::get_terminals() {
 std::set<char> ContextFreeGrammar::get_non_terminals() {
     return non_terminals;
 }
+
+bool ContextFreeGrammar::is_epsilon_generative() const {
+    for (auto& rule : rules) {
+        if (rule.get_right().empty()) {
+            return true;
+        }
+    }
+    return false;
+}
