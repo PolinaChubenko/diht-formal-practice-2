@@ -20,6 +20,24 @@ LR::Action::Action(char method, int state) : method(method), state(state) {}
 
 LR::Action::Action(char method, Rule rule) : method(method), rule(std::move(rule)) {}
 
+std::string LR::Action::str() const {
+    std::string str_out;
+    if (method == 'n') {
+        str_out = " ";
+    } else if (method == 's') {
+        str_out = std::string(1, method);
+        str_out.append(":");
+        str_out.append(std::to_string(state));
+    } else if (method == 'r') {
+        str_out = std::string(1, method);
+        str_out.append(":");
+        str_out.append(rule.str());
+    } else {
+        str_out = std::string(1, method);
+    }
+    return str_out;
+}
+
 bool operator<(const LR::Situation &situation1, const LR::Situation &situation2) {
     if (situation1.rule == situation2.rule) {
         return situation1.predict < situation2.predict;
@@ -251,36 +269,22 @@ void LR::get_automaton(std::ostream &out) const {
 }
 
 void LR::get_table(std::ostream &out) const {
-    int cell_width = 10;
+    int cell_width = 11;
     bool is_start = true;
     for (auto& cell : table) {
         auto letter = cell.first;
-        auto states = cell.second;
+        auto actions = cell.second;
         if (is_start) {
             out << std::setw(cell_width) << "states";
-            for (int i = 0; i < states.size(); ++i) {
+            for (int i = 0; i < actions.size(); ++i) {
                 out << std::setw(cell_width) << i;
             }
             out << std::endl;
             is_start = false;
         }
         out << std::setw(cell_width) << letter;
-        for (auto& state : states) {
-            std::string str_out;
-            if (state.method == 'n') {
-                str_out = " ";
-            } else if (state.method == 's') {
-                str_out = std::string(1, state.method);
-                str_out.append(":");
-                str_out.append(std::to_string(state.state));
-            } else if (state.method == 'r') {
-                str_out = std::string(1, state.method);
-                str_out.append(":");
-                str_out.append(state.rule.str());
-            } else {
-                str_out = std::string(1, state.method);
-            }
-            out << std::setw(cell_width) << str_out;
+        for (auto& action : actions) {
+            out << std::setw(cell_width) << action.str();
         }
         out << "\n";
     }
@@ -300,6 +304,34 @@ std::ostream &operator<<(std::ostream &out, const LR &lr) {
 bool LR::parse(const std::string &word) {
     if (grammar.is_definitely_not_in_grammar(word)) {
         return false;
+    }
+    auto input = word + "#";
+    std::stack<std::string> path;
+    path.push("0");
+    for (auto& letter : input) {
+        bool is_letter_processed = false;
+        while (!is_letter_processed) {
+            auto state = std::stoi(path.top());
+            auto action = table[letter][state];
+            if (action.method == 'n') {
+                return false;
+            } else if (action.method == 'a') {
+                break;
+            } else if (action.method == 's') {
+                path.push(std::string(1, letter));
+                path.push(std::to_string(action.state));
+                is_letter_processed = true;
+            } else if (action.method == 'r') {
+                int rule_size = action.rule.get_right().size();
+                for (int i = 0; i < 2 * rule_size; ++i) {
+                    path.pop();
+                }
+                state = std::stoi(path.top());
+                path.push(std::string(1, action.rule.get_left()));
+                action = table[action.rule.get_left()][state];
+                path.push(std::to_string(action.state));
+            }
+        }
     }
     return true;
 }

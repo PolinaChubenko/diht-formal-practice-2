@@ -40,6 +40,7 @@ protected:
         explicit Action(char);
         Action(char, int);
         Action(char, Rule);
+        [[nodiscard]] std::string str() const;
     };
 protected:
     ContextFreeGrammar grammar;
