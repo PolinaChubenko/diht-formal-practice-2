@@ -26,6 +26,7 @@ TEST_F(ContextFreeGrammarTestCase, GetMethods) {
     EXPECT_EQ(rule.get_right(), "(S)S");
     EXPECT_EQ(rule.get_dot_pos(), 1);
     EXPECT_EQ(rule.get_dot_symbol(), 'S');
+    EXPECT_EQ(rule.str(), "S->(S)S");
 }
 
 TEST_F(ContextFreeGrammarTestCase, DotMethod) {

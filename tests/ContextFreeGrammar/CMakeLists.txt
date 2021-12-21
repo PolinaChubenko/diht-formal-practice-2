@@ -1,5 +1,5 @@
 set(TARGET_NAME "ContextFreeGrammar")
-set(COVERAGE_NAME "coverage")
+set(COVERAGE_NAME "00-coverage")
 set(COVERAGE_TARGET "coverage-ContextFreeGrammar")
 set(SOURCE_DIR_MAIN "${ContextFreeGrammar_SOURCE_DIR}")
 set(SOURCES ${source-files})
