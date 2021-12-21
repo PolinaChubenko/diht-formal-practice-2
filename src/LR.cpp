@@ -64,11 +64,11 @@ void LR::init_first() {
     while (is_changed) {
         is_changed = false;
         for (auto& rule : grammar.get_rules()) {
-            size_t prev_size = first[rule.get_term()].size();
-            auto it_begin = first[rule.get_terms()[0]].begin();
-            auto it_end = first[rule.get_terms()[0]].end();
-            first[rule.get_term()].insert(it_begin, it_end);
-            if (prev_size != first[rule.get_term()].size()) {
+            size_t prev_size = first[rule.get_left()].size();
+            auto it_begin = first[rule.get_right()[0]].begin();
+            auto it_end = first[rule.get_right()[0]].end();
+            first[rule.get_left()].insert(it_begin, it_end);
+            if (prev_size != first[rule.get_left()].size()) {
                 is_changed = true;
             }
         }
@@ -77,10 +77,10 @@ void LR::init_first() {
 
 std::set<char> LR::get_first(const Situation& situation) {
     auto rule = situation.rule;
-    if (rule.get_dot_pos() + 1 == rule.get_terms().size()) {
+    if (rule.get_dot_pos() + 1 == rule.get_right().size()) {
         return situation.predict;
     }
-    auto next = rule.get_terms()[rule.get_dot_pos() + 1];
+    auto next = rule.get_right()[rule.get_dot_symbol() + 1];
     return first[next];
 }
 
@@ -96,11 +96,11 @@ void LR::closure(size_t set_number) {
                 auto rules = grammar.get_rules();
                 for (const auto &rule : rules) {
                     // B -> r
-                    if (situation.rule.get_dot_term() != rule.get_term()) {
+                    if (situation.rule.get_dot_symbol() != rule.get_left()) {
                         continue;
                     }
                     auto predict = get_first(situation);
-                    auto new_situation = Situation(rule.get_term(), rule.get_terms(), 0, predict);
+                    auto new_situation = Situation(rule.get_left(), rule.get_right(), 0, predict);
                     additional.situations.emplace(new_situation);
                 }
             }
@@ -114,7 +114,7 @@ void LR::go_to(size_t set_number) {
     for (auto& situation : set.situations) {
         auto rule = situation.rule;
         if (rule.is_dot_valid()) {
-            auto letter = rule.get_dot_term();
+            auto letter = rule.get_dot_symbol();
             auto search = automaton[set_number].next.find(letter);
             if (search == automaton[set_number].next.end()) {
                 automaton[set_number].next[letter] = automaton.size();
@@ -122,7 +122,7 @@ void LR::go_to(size_t set_number) {
                 automaton.back().prev[letter].emplace(set_number);
             }
             size_t new_dot_pos = rule.get_dot_pos() + 1;
-            auto new_situation = Situation(rule.get_term(), rule.get_terms(), new_dot_pos, situation.predict);
+            auto new_situation = Situation(rule.get_left(), rule.get_right(), new_dot_pos, situation.predict);
             auto to = automaton[set_number].next[letter];
             automaton[to].situations.emplace(new_situation);
         }
@@ -187,7 +187,7 @@ void LR::build_table() {
         }
         for (auto& situation : vertex.situations) {
             if (!situation.rule.is_dot_valid()) {
-                if (situation.rule.get_term() == '$') {
+                if (situation.rule.get_left() == '$') {
                     for (auto& letter : situation.predict) {
                         table[letter][j] = Action('a');
                     }

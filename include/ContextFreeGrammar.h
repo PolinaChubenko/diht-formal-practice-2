@@ -8,8 +8,8 @@
 
 class Rule {
 private:
-    char term{};
-    std::string terms;
+    char left{};
+    std::string right;
     size_t dot_pos = 0;
 public:
     Rule() = default;
@@ -22,10 +22,10 @@ public:
     friend std::istream &operator>>(std::istream &, Rule&);
     friend std::ostream &operator<<(std::ostream &, const Rule&);
 
-    [[nodiscard]] char get_term() const;
-    [[nodiscard]] std::string get_terms() const;
+    [[nodiscard]] char get_left() const;
+    [[nodiscard]] std::string get_right() const;
     [[nodiscard]] size_t get_dot_pos() const;
-    [[nodiscard]] char get_dot_term() const;
+    [[nodiscard]] char get_dot_symbol() const;
     [[nodiscard]] bool is_dot_valid() const;
     [[nodiscard]] std::string str() const;
 };

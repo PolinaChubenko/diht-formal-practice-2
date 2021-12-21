@@ -28,9 +28,9 @@ void Earley::scan(size_t j, const std::string &word) {
         if (!situation.rule.is_dot_valid()) {
             continue;
         }
-        if (situation.rule.get_dot_term() == word[j - 1]) {
+        if (situation.rule.get_dot_symbol() == word[j - 1]) {
             // A -> Pa.Q, i
-            auto new_rule = Situation(situation.rule.get_term(), situation.rule.get_terms(),
+            auto new_rule = Situation(situation.rule.get_left(), situation.rule.get_right(),
                                       situation.rule.get_dot_pos() + 1, situation.word_pos);
             situations[j].insert(new_rule);
         }
@@ -41,7 +41,7 @@ bool Earley::complete(size_t j) {
     bool is_situations_changed = false;
     for (const auto& situation1 : situations[j]) {
         // B -> p., i
-        if (situation1.rule.get_dot_pos() != situation1.rule.get_terms().size()) {
+        if (situation1.rule.get_dot_pos() != situation1.rule.get_right().size()) {
             continue;
         }
         for (const auto& situation2 : situations[situation1.word_pos]) {
@@ -49,11 +49,11 @@ bool Earley::complete(size_t j) {
             if (!situation2.rule.is_dot_valid()) {
                 continue;
             }
-            if (situation2.rule.get_dot_term() != situation1.rule.get_term()) {
+            if (situation2.rule.get_dot_symbol() != situation1.rule.get_left()) {
                 continue;
             }
             // A -> qB.r, j
-            auto new_rule = Situation(situation2.rule.get_term(), situation2.rule.get_terms(),
+            auto new_rule = Situation(situation2.rule.get_left(), situation2.rule.get_right(),
                                       situation2.rule.get_dot_pos() + 1, situation2.word_pos);
             auto result = situations[j].insert(new_rule);
             if (result.second) {
@@ -74,11 +74,11 @@ bool Earley::predict(size_t j) {
         auto rules = grammar.get_rules();
         for (const auto& rule : rules) {
             // B -> r
-            if (situation.rule.get_dot_term() != rule.get_term()) {
+            if (situation.rule.get_dot_symbol() != rule.get_left()) {
                 continue;
             }
             // B -> .r, j
-            auto new_rule = Situation(rule.get_term(), rule.get_terms(), 0, j);
+            auto new_rule = Situation(rule.get_left(), rule.get_right(), 0, j);
             auto result = situations[j].insert(new_rule);
             if (result.second) {
                 is_situations_changed = true;
