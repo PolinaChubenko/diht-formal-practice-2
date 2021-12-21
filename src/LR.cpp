@@ -80,7 +80,7 @@ std::set<char> LR::get_first(const Situation& situation) {
     if (rule.get_dot_pos() + 1 == rule.get_right().size()) {
         return situation.predict;
     }
-    auto next = rule.get_right()[rule.get_dot_symbol() + 1];
+    auto next = rule.get_right()[rule.get_dot_pos() + 1];
     return first[next];
 }
 
