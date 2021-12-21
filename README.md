@@ -29,6 +29,9 @@
 Запуск ```./Earley-bin```
 ![example1](imgs/example1.png)
 
+Запуск ```./LR-bin```
+![example1](imgs/example2.png)
+
 #### Для сборки проекта:
 
 - Выполните установку пакетов boost:
