@@ -45,10 +45,11 @@ protected:
     void closure(size_t);
     void go_to(size_t);
     void build_automaton();
-    size_t find_equal_set(size_t);
+    int find_equal_set(size_t);
     friend class LR;
 public:
     LR_Automaton() = default;
+    void preprocessing();
     void set_grammar(const ContextFreeGrammar&);
     friend std::ostream& operator << (std::ostream&, const LR_Automaton&);
 };

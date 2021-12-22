@@ -148,7 +148,7 @@ void LR_Automaton::build_automaton() {
     }
 }
 
-size_t LR_Automaton::find_equal_set(size_t index) {
+int LR_Automaton::find_equal_set(size_t index) {
     for (size_t i = 0; i < index; ++i) {
         if (sets[index] == sets[i]) {
             return i;
@@ -157,10 +157,15 @@ size_t LR_Automaton::find_equal_set(size_t index) {
     return -1;
 }
 
-void LR_Automaton::set_grammar(const ContextFreeGrammar &new_grammar) {
-    grammar = new_grammar;
+
+void LR_Automaton::preprocessing() {
     init_first();
     build_automaton();
+}
+
+void LR_Automaton::set_grammar(const ContextFreeGrammar &new_grammar) {
+    grammar = new_grammar;
+    preprocessing();
 }
 
 std::ostream &operator<<(std::ostream &out, const LR_Automaton &automaton) {

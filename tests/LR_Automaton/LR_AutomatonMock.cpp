@@ -1,6 +1,6 @@
 #include "LR_AutomatonMock.h"
 
-void LR_AutomatonMock::set_grammar(const ContextFreeGrammar &new_grammar) {
+void LR_AutomatonMock::set_grammar_only(const ContextFreeGrammar &new_grammar) {
     grammar = new_grammar;
 }
 
@@ -26,4 +26,22 @@ void LR_AutomatonMock::do_go_to(size_t set_number) {
         sets[i].state_number = i;
         alignment[i] = i;
     }
+}
+
+void LR_AutomatonMock::print_first(std::ostream &out) {
+    for (auto& symbol : first) {
+        out << symbol.first << ": ";
+        for (auto& prediction : symbol.second) {
+            out << prediction << " ";
+        }
+        out << "\n";
+    }
+}
+
+void LR_AutomatonMock::print_set(std::ostream &out, size_t set_number) {
+    out << sets[set_number];
+}
+
+int LR_AutomatonMock::do_find_equal_set(size_t set_number) {
+    return find_equal_set(set_number);
 }
