@@ -27,7 +27,7 @@ protected:
     };
 protected:
     ContextFreeGrammar grammar;
-    Automaton automaton;
+    LR_Automaton automaton;
     std::map<char, std::vector<Action>> table;
 protected:
     void init_table();

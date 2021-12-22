@@ -1,34 +1,34 @@
 #include "LR_Automaton.h"
 
 
-Automaton::Situation::Situation(char term, std::string terms, size_t dot_pos, std::set<char> predict)
+LR_Automaton::Situation::Situation(char term, std::string terms, size_t dot_pos, std::set<char> predict)
         : rule(Rule(term, std::move(terms), dot_pos)), predict(std::move(predict)) {}
 
-Automaton::Situation::Situation(const std::string &rule, size_t dot_pos, std::set<char> predict)
+LR_Automaton::Situation::Situation(const std::string &rule, size_t dot_pos, std::set<char> predict)
         : rule(Rule(rule, dot_pos)), predict(std::move(predict)) {}
 
-Automaton::Situation::Situation(const std::string& rule, char symbol) : rule(rule) {
+LR_Automaton::Situation::Situation(const std::string& rule, char symbol) : rule(rule) {
     predict.insert(symbol);
 }
 
-Automaton::SetOfSituations::SetOfSituations(int state_number) : state_number(state_number) {}
+LR_Automaton::SetOfSituations::SetOfSituations(int state_number) : state_number(state_number) {}
 
-bool operator<(const Automaton::Situation &situation1, const Automaton::Situation &situation2) {
+bool operator<(const LR_Automaton::Situation &situation1, const LR_Automaton::Situation &situation2) {
     if (situation1.rule == situation2.rule) {
         return situation1.predict < situation2.predict;
     }
     return situation1.rule < situation2.rule;
 }
 
-bool operator==(const Automaton::Situation &situation1, const Automaton::Situation &situation2) {
+bool operator==(const LR_Automaton::Situation &situation1, const LR_Automaton::Situation &situation2) {
     return situation1.rule == situation2.rule && situation1.predict == situation2.predict;
 }
 
-bool operator==(const Automaton::SetOfSituations &set1, const Automaton::SetOfSituations &set2) {
+bool operator==(const LR_Automaton::SetOfSituations &set1, const LR_Automaton::SetOfSituations &set2) {
     return set1.situations == set2.situations;
 }
 
-std::ostream &operator<<(std::ostream &out, const Automaton::SetOfSituations &set) {
+std::ostream &operator<<(std::ostream &out, const LR_Automaton::SetOfSituations &set) {
     out << "[";
     size_t rules_iter = 0;
     for (auto& situation : set.situations) {
@@ -48,7 +48,7 @@ std::ostream &operator<<(std::ostream &out, const Automaton::SetOfSituations &se
 
 /////////////////////////      LR_AUTOMATON      /////////////////////////
 
-void Automaton::init_first() {
+void LR_Automaton::init_first() {
     first.clear();
     for (auto& symbol : grammar.get_terminals()) {
         first[symbol].insert(symbol);
@@ -68,7 +68,7 @@ void Automaton::init_first() {
     }
 }
 
-std::set<char> Automaton::get_first(const Situation& situation) {
+std::set<char> LR_Automaton::get_first(const Situation& situation) {
     auto rule = situation.rule;
     if (rule.get_dot_pos() + 1 == rule.get_right().size()) {
         return situation.predict;
@@ -78,7 +78,7 @@ std::set<char> Automaton::get_first(const Situation& situation) {
 }
 
 
-void Automaton::closure(size_t set_number) {
+void LR_Automaton::closure(size_t set_number) {
     size_t prev_size = 0;
     SetOfSituations additional;
     while (sets[set_number].situations.size() != prev_size) {
@@ -102,7 +102,7 @@ void Automaton::closure(size_t set_number) {
     }
 }
 
-void Automaton::go_to(size_t set_number) {
+void LR_Automaton::go_to(size_t set_number) {
     auto set = sets[set_number];
     for (auto& situation : set.situations) {
         auto rule = situation.rule;
@@ -123,7 +123,7 @@ void Automaton::go_to(size_t set_number) {
 }
 
 
-void Automaton::build_automaton() {
+void LR_Automaton::build_automaton() {
     sets.resize(1);
     sets[0].situations.emplace(Situation("$->S", '#'));
     size_t state = 0;
@@ -148,7 +148,7 @@ void Automaton::build_automaton() {
     }
 }
 
-size_t Automaton::find_equal_set(size_t index) {
+size_t LR_Automaton::find_equal_set(size_t index) {
     for (size_t i = 0; i < index; ++i) {
         if (sets[index] == sets[i]) {
             return i;
@@ -157,13 +157,13 @@ size_t Automaton::find_equal_set(size_t index) {
     return -1;
 }
 
-void Automaton::set_grammar(const ContextFreeGrammar &new_grammar) {
+void LR_Automaton::set_grammar(const ContextFreeGrammar &new_grammar) {
     grammar = new_grammar;
     init_first();
     build_automaton();
 }
 
-std::ostream &operator<<(std::ostream &out, const Automaton &automaton) {
+std::ostream &operator<<(std::ostream &out, const LR_Automaton &automaton) {
     for (auto& set : automaton.sets) {
         if (set.state_number != -1) {
             out << "V_" << set.state_number << ":" << set;

@@ -10,7 +10,7 @@
 #include <stack>
 
 
-class Automaton {
+class LR_Automaton {
 protected:
     struct Situation {
         Rule rule;
@@ -48,8 +48,8 @@ protected:
     size_t find_equal_set(size_t);
     friend class LR;
 public:
-    Automaton() = default;
+    LR_Automaton() = default;
     void set_grammar(const ContextFreeGrammar&);
-    friend std::ostream& operator << (std::ostream&, const Automaton&);
+    friend std::ostream& operator << (std::ostream&, const LR_Automaton&);
 };
 
