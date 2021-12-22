@@ -12,8 +12,12 @@ void LR_AutomatonMock::add_situation_to_sets(size_t set_number, std::string rule
     sets[set_number].situations.insert(situation);
 }
 
-void LR_AutomatonMock::do_first() {
+void LR_AutomatonMock::do_init_first() {
     init_first();
+}
+
+std::set<char> LR_AutomatonMock::get_first_for_situation_in_set(size_t set_number) {
+    return get_first(*sets[set_number].situations.begin());
 }
 
 void LR_AutomatonMock::do_closure(size_t set_number) {
