@@ -8,7 +8,7 @@ set(EXTERNAL_INSTALL_LOCATION ${mipt-formal-practice-2_SOURCE_DIR}/3rdparty)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(Threads REQUIRED)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${mipt-formal-practice-2_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${mipt-formal-practice-2_SOURCE_DIR}/bin)
 set(Boost_USE_MULTITHREADED OFF)
@@ -17,7 +17,7 @@ SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage --coverage")
 SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage --coverage")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
 if (APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 endif()
 
 ExternalProject_Add(

@@ -22,10 +22,11 @@ TEST_F(ContextFreeGrammarTestCase, ParseRuleExceptions) {
 
 TEST_F(ContextFreeGrammarTestCase, GetMethods) {
     auto rule = Rule('S', "(S)S", 1);
-    EXPECT_EQ(rule.get_term(), 'S');
-    EXPECT_EQ(rule.get_terms(), "(S)S");
+    EXPECT_EQ(rule.get_left(), 'S');
+    EXPECT_EQ(rule.get_right(), "(S)S");
     EXPECT_EQ(rule.get_dot_pos(), 1);
-    EXPECT_EQ(rule.get_dot_term(), 'S');
+    EXPECT_EQ(rule.get_dot_symbol(), 'S');
+    EXPECT_EQ(rule.str(), "S->(S)S");
 }
 
 TEST_F(ContextFreeGrammarTestCase, DotMethod) {
@@ -56,8 +57,8 @@ TEST_F(ContextFreeGrammarTestCase, GettingRuleFromStream) {
 
     Rule rule;
     input >> rule;
-    EXPECT_EQ(rule.get_term(), 'S');
-    EXPECT_EQ(rule.get_terms(), "aSSb");
+    EXPECT_EQ(rule.get_left(), 'S');
+    EXPECT_EQ(rule.get_right(), "aSSb");
     EXPECT_EQ(rule.get_dot_pos(), 0);
 
     std::stringstream output;
@@ -71,9 +72,23 @@ TEST_F(ContextFreeGrammarTestCase, GrammarBasic) {
     std::vector<std::string> rules = {"S->(S)S", "S->S(S)", "S-> "};
     std::vector<Rule> vec_rules = {Rule("S->(S)S"), Rule("S->S(S)"), Rule("S-> ")};
     std::set<char> alphabet = {'(', ')'};
+    std::set<char> non_terminals = {'S'};
     auto grammar = ContextFreeGrammar(rules);
     EXPECT_EQ(grammar.get_rules(), vec_rules);
-    EXPECT_EQ(grammar.get_alphabet(), alphabet);
+    EXPECT_EQ(grammar.get_terminals(), alphabet);
+    EXPECT_EQ(grammar.get_non_terminals(), non_terminals);
+}
+
+TEST_F(ContextFreeGrammarTestCase, GrammarEpsilonGenerative) {
+    std::vector<std::string> rules = {"S->(S)S", "S->S(S)", "S-> "};
+    auto grammar = ContextFreeGrammar(rules);
+    EXPECT_TRUE(grammar.is_epsilon_generative());
+}
+
+TEST_F(ContextFreeGrammarTestCase, GrammarNonEpsilonGenerative) {
+    std::vector<std::string> rules = {"S->aSbS", "S->cC", "C->d"};
+    auto grammar = ContextFreeGrammar(rules);
+    EXPECT_FALSE(grammar.is_epsilon_generative());
 }
 
 TEST_F(ContextFreeGrammarTestCase, AlphabetExceptions) {
@@ -89,6 +104,9 @@ TEST_F(ContextFreeGrammarTestCase, AlphabetExceptions) {
     rules = {"#->aSbS", "S->c"};
     EXPECT_THROW(auto rule = ContextFreeGrammar(rules), std::invalid_argument);
 
+    rules = {"S->aSbS", "c->c"};
+    EXPECT_THROW(auto rule = ContextFreeGrammar(rules), std::invalid_argument);
+
     rules = {"S->aSbS", "S-> ", "S->c"};
     EXPECT_NO_THROW(auto rule = ContextFreeGrammar(rules));
 }
@@ -97,12 +115,12 @@ TEST_F(ContextFreeGrammarTestCase, GettingGrammarFromStream) {
     std::stringstream input;
     input << "S->aSbS\nS-> \n";
     std::vector<Rule> rules = {Rule("S->aSbS"), Rule("S-> ")};
-    std::set<char> alphabet = {'a', 'b'};
+    std::set<char> terminals = {'a', 'b'};
 
     auto grammar = ContextFreeGrammar(2);
     input >> grammar;
     EXPECT_EQ(grammar.get_rules(), rules);
-    EXPECT_EQ(grammar.get_alphabet(), alphabet);
+    EXPECT_EQ(grammar.get_terminals(), terminals);
 
     std::stringstream output;
     output << grammar;

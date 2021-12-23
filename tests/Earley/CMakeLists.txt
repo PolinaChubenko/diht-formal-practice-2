@@ -1,5 +1,5 @@
 set(TARGET_NAME "Earley")
-set(COVERAGE_NAME "coverage")
+set(COVERAGE_NAME "01-coverage")
 set(COVERAGE_TARGET "coverage-Earley")
 set(SOURCE_DIR_MAIN "${Earley_SOURCE_DIR}")
 set(SOURCES ${source-files})

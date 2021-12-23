@@ -10,7 +10,7 @@ Rule::Rule(const std::string &rule, size_t dot_pos) : dot_pos(dot_pos) {
     parse_rule(rule);
 }
 
-Rule::Rule(char term, std::string terms, size_t dot_pos) : term(term), terms(std::move(terms)), dot_pos(dot_pos) {}
+Rule::Rule(char left, std::string right, size_t dot_pos) : left(left), right(std::move(right)), dot_pos(dot_pos) {}
 
 
 void Rule::parse_rule(const std::string &rule) {
@@ -18,25 +18,25 @@ void Rule::parse_rule(const std::string &rule) {
     if (found != 1) {
         throw std::invalid_argument("There is an invalid rule");
     }
-    term = rule[0];
-    terms = rule.substr(found + 2);
-    if (terms == " ") {
-        terms = "";
+    left = rule[0];
+    right = rule.substr(found + 2);
+    if (right == " ") {
+        right = "";
     }
 }
 
 bool operator==(const Rule &rule1, const Rule &rule2) {
-    return rule1.term == rule2.term && rule1.terms == rule2.terms && rule1.dot_pos == rule2.dot_pos;
+    return rule1.left == rule2.left && rule1.right == rule2.right && rule1.dot_pos == rule2.dot_pos;
 }
 
 bool operator<(const Rule &rule1, const Rule &rule2) {
-    if (rule1.term == rule2.term) {
-        if (rule1.terms == rule2.terms) {
+    if (rule1.left == rule2.left) {
+        if (rule1.right == rule2.right) {
             return rule1.dot_pos < rule2.dot_pos;
         }
-        return rule1.terms < rule2.terms;
+        return rule1.right < rule2.right;
     }
-    return rule1.term < rule2.term;
+    return rule1.left < rule2.left;
 }
 
 std::istream &operator>>(std::istream &in, Rule &rule) {
@@ -48,44 +48,58 @@ std::istream &operator>>(std::istream &in, Rule &rule) {
 }
 
 std::ostream &operator<<(std::ostream &out, const Rule &rule) {
-    out << rule.term << "->";
-    out << rule.terms.substr(0, rule.dot_pos) << "." << rule.terms.substr(rule.dot_pos);
+    out << rule.left << "->";
+    out << rule.right.substr(0, rule.dot_pos) << "." << rule.right.substr(rule.dot_pos);
     return out;
 }
 
-char Rule::get_term() const {
-    return term;
+char Rule::get_left() const {
+    return left;
 }
 
-std::string Rule::get_terms() const {
-    return terms;
+std::string Rule::get_right() const {
+    return right;
 }
 
 size_t Rule::get_dot_pos() const {
     return dot_pos;
 }
 
-char Rule::get_dot_term() const {
-    return terms[dot_pos];
+char Rule::get_dot_symbol() const {
+    return right[dot_pos];
 }
 
 bool Rule::is_dot_valid() const {
-    return !(terms.empty() || dot_pos >= terms.size());
+    return !(right.empty() || dot_pos >= right.size());
 }
 
-
+std::string Rule::str() const {
+    std::string rule = " ->";
+    rule[0] = left;
+    rule.append(right);
+    return rule;
+}
 
 
 //////////////////////      ContextFreeGrammar      //////////////////////
 void ContextFreeGrammar::parse_alphabet() {
     for (const auto& rule : rules) {
-        auto terms = rule.get_terms();
+        if (rule.get_left() == '$' || rule.get_left() == '#') {
+            throw std::invalid_argument("Grammar has rules with forbidden symbols");
+        }
+        if (!std::isupper(rule.get_left())) {
+            throw std::invalid_argument("Grammar has incorrect rule starting with terminal");
+        }
+        non_terminals.emplace(rule.get_left());
+        auto terms = rule.get_right();
         for (const auto& symbol : terms) {
-            if (symbol == '$' || symbol == '#' || rule.get_term() == '$' || rule.get_term() == '#') {
+            if (symbol == '$' || symbol == '#') {
                 throw std::invalid_argument("Grammar has rules with forbidden symbols");
             }
             if (!std::isupper(symbol)) {
-                alphabet.emplace(symbol);
+                terminals.emplace(symbol);
+            } else {
+                non_terminals.emplace(symbol);
             }
         }
     }
@@ -137,13 +151,26 @@ std::vector<Rule> ContextFreeGrammar::get_rules() const {
 
 bool ContextFreeGrammar::is_definitely_not_in_grammar(const std::string &word) {
     for (const auto& letter : word) {
-        if (alphabet.find(letter) == alphabet.end()) {
+        if (terminals.find(letter) == terminals.end()) {
             return true;
         }
     }
     return false;
 }
 
-std::set<char> ContextFreeGrammar::get_alphabet() {
-    return alphabet;
+std::set<char> ContextFreeGrammar::get_terminals() {
+    return terminals;
+}
+
+std::set<char> ContextFreeGrammar::get_non_terminals() {
+    return non_terminals;
+}
+
+bool ContextFreeGrammar::is_epsilon_generative() const {
+    for (auto& rule : rules) {
+        if (rule.get_right().empty()) {
+            return true;
+        }
+    }
+    return false;
 }

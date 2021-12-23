@@ -8,8 +8,8 @@
 
 class Rule {
 private:
-    char term{};
-    std::string terms;
+    char left{};
+    std::string right;
     size_t dot_pos = 0;
 public:
     Rule() = default;
@@ -22,18 +22,20 @@ public:
     friend std::istream &operator>>(std::istream &, Rule&);
     friend std::ostream &operator<<(std::ostream &, const Rule&);
 
-    [[nodiscard]] char get_term() const;
-    [[nodiscard]] std::string get_terms() const;
+    [[nodiscard]] char get_left() const;
+    [[nodiscard]] std::string get_right() const;
     [[nodiscard]] size_t get_dot_pos() const;
-    [[nodiscard]] char get_dot_term() const;
+    [[nodiscard]] char get_dot_symbol() const;
     [[nodiscard]] bool is_dot_valid() const;
+    [[nodiscard]] std::string str() const;
 };
 
 
 
 class ContextFreeGrammar {
 private:
-    std::set<char> alphabet{};
+    std::set<char> terminals{};
+    std::set<char> non_terminals{};
     std::vector<Rule> rules{};
 protected:
     void parse_alphabet();
@@ -46,6 +48,8 @@ public:
     friend std::ostream &operator<<(std::ostream&, const ContextFreeGrammar&);
     [[nodiscard]] std::vector<Rule> get_rules() const;
     bool is_definitely_not_in_grammar(const std::string&);
-    [[nodiscard]] std::set<char> get_alphabet();
+    [[nodiscard]] std::set<char> get_terminals();
+    [[nodiscard]] std::set<char> get_non_terminals();
+    bool is_epsilon_generative() const;
 };
 
