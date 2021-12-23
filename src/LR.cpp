@@ -25,6 +25,11 @@ std::string LR::Action::str() const {
     return str_out;
 }
 
+bool operator==(const LR::Action &action1, const LR::Action &action2) {
+    return action1.method == action2.method && action1.state == action2.state
+                                            && action1.rule.str() == action2.rule.str();
+}
+
 
 /////////////////////////      LR(1)      /////////////////////////
 

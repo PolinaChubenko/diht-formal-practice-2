@@ -30,6 +30,7 @@ protected:
     LR_Automaton automaton;
     std::map<char, std::vector<Action>> table;
 protected:
+    friend bool operator==(const Action &, const Action &);
     void init_table();
     void build_table();
 public:
