@@ -39,9 +39,12 @@ void Earley::scan(size_t j, const std::string &word) {
 
 bool Earley::complete(size_t j) {
     bool is_situations_changed = false;
-    for (const auto& situation1 : situations[j]) {
+    for (auto& situation1 : situations[j]) {
         // B -> p., i
         if (situation1.rule.get_dot_pos() != situation1.rule.get_right().size()) {
+            continue;
+        }
+        if (situation1.is_complete_done) {
             continue;
         }
         for (const auto& situation2 : situations[situation1.word_pos]) {
@@ -60,6 +63,9 @@ bool Earley::complete(size_t j) {
                 is_situations_changed = true;
             }
         }
+        // this modification has no impact on the sorted position element
+        auto* situation = const_cast<Situation*>(&situation1);
+        situation->is_complete_done = true;
     }
     return is_situations_changed;
 }

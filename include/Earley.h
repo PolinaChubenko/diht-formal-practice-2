@@ -12,6 +12,7 @@ protected:
     struct Situation {
         Rule rule;
         size_t word_pos = 0;
+        bool is_complete_done = false;
     public:
         Situation() = default;
         Situation(char, std::string, size_t, size_t);
