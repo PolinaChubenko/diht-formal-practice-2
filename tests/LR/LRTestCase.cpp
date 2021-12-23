@@ -131,6 +131,9 @@ TEST_F(LRTestCase, CheckingTableInit) {
     for (auto& line : table) {
         auto actions = line.second;
         EXPECT_EQ(actions.size(), 10);
+        for (auto& action : actions) {
+            EXPECT_EQ(action, mock_obj.get_action('n', -1));
+        }
     }
 
 }
@@ -150,12 +153,20 @@ TEST_F(LRTestCase, CheckingTable) {
 
     auto actions = table.at('c');
     EXPECT_EQ(actions[0].str(), "s:2");
-    EXPECT_EQ(actions[3].str(), "r:C->d");
+    EXPECT_EQ(actions[1], mock_obj.get_action('n', -1));
     EXPECT_EQ(actions[2], mock_obj.get_action('s', 2));
+    EXPECT_EQ(actions[3].str(), "r:C->d");
+    EXPECT_EQ(actions[4], mock_obj.get_action('s', 6));
+    EXPECT_EQ(actions[5], mock_obj.get_action('r', -1, "C->cC"));
+    EXPECT_EQ(actions[6], mock_obj.get_action('s', 6));
+    EXPECT_EQ(actions[7], mock_obj.get_action('n', -1));
+    EXPECT_EQ(actions[8], mock_obj.get_action('n', -1));
+    EXPECT_EQ(actions[9], mock_obj.get_action('n', -1));
 
     actions = table.at('#');
     EXPECT_EQ(actions[1].str(), "a");
     EXPECT_EQ(actions[7].str(), "r:C->d");
+    EXPECT_EQ(actions[7], mock_obj.get_action('r', -1, "C->d"));
     EXPECT_EQ(actions[8], mock_obj.get_action('r', -1, "S->CC"));
     EXPECT_EQ(actions[9], mock_obj.get_action('r', -1, "C->cC"));
 }
