@@ -1,6 +1,5 @@
-
-# Created by https://www.toptal.com/developers/gitignore/api/c++,clion,linux,macos,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=c++,clion,linux,macos,windows
+# Created by https://www.toptal.com/developers/gitignore/api/c++,linux,windows,macos,venv,clion
+# Edit at https://www.toptal.com/developers/gitignore?templates=c++,linux,windows,macos,venv,clion
 
 ### C++ ###
 # Prerequisites
@@ -15,6 +14,12 @@
 # Precompiled Headers
 *.gch
 *.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
 
 # Compiled Dynamic libraries
 *.so
@@ -46,9 +51,6 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-
-# AWS User-specific
-.idea/**/aws.xml
 
 # Generated files
 .idea/**/contentModel.xml
@@ -186,6 +188,20 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -212,4 +228,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/c++,clion,linux,macos,windows
+# End of https://www.toptal.com/developers/gitignore/api/c++,linux,windows,macos,venv,clion
